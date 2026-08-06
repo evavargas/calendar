@@ -1,0 +1,43 @@
+.ui-field {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.ui-field__label,
+.ui-field > span:first-child {
+  font-size: 0.875rem;
+  font-weight: 650;
+  color: var(--color-fg-muted);
+}
+
+.ui-field__control,
+.ui-field input,
+.ui-field textarea,
+.ui-field select {
+  width: 100%;
+  min-height: var(--touch-min);
+  padding: 0.65rem 0.85rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  color: var(--color-fg);
+  background: var(--color-surface);
+}
+
+.ui-field textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.ui-field__hint {
+  margin: 0.35rem 0 0;
+  font-size: 0.85rem;
+  color: var(--color-fg-muted);
+}
+
+.ui-field legend {
+  margin-bottom: 0.45rem;
+  font-size: 0.875rem;
+  font-weight: 650;
+  color: var(--color-fg-muted);
+  padding: 0;
+}

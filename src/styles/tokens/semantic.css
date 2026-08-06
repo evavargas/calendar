@@ -1,0 +1,110 @@
+/* Semantic tokens — components and domains must use these. */
+
+:root,
+:root[data-theme="light"] {
+  color-scheme: light;
+
+  --color-fg: var(--neutral-900);
+  --color-fg-muted: var(--neutral-500);
+  --color-fg-inverse: var(--neutral-50);
+
+  --color-bg: var(--neutral-100);
+  --color-bg-subtle: var(--neutral-50);
+  --color-surface: var(--neutral-0);
+  --color-surface-hover: rgb(255 255 255 / 70%);
+
+  --color-border: var(--neutral-200);
+  --color-border-subtle: rgb(18 21 28 / 8%);
+  --color-border-strong: var(--neutral-300);
+
+  --color-accent: var(--teal-500);
+  --color-accent-deep: var(--teal-600);
+  --color-accent-soft: var(--teal-50);
+  --color-accent-fg: var(--neutral-0);
+  --color-on-accent: var(--neutral-0);
+
+  --color-danger: var(--red-600);
+  --color-danger-soft: var(--red-100);
+  --color-danger-border: var(--red-200);
+  --color-warn: var(--amber-600);
+
+  --color-focus: var(--teal-500);
+
+  --color-hero-fg: var(--hero-fg);
+  --color-hero-fg-muted: rgb(244 247 248 / 82%);
+  --color-hero-accent: var(--teal-300);
+  --color-hero-accent-hover: var(--teal-200);
+  --color-on-hero-accent: var(--teal-900);
+  --color-hero-secondary-bg: rgb(255 255 255 / 8%);
+  --color-hero-secondary-border: rgb(255 255 255 / 28%);
+
+  --color-banner-fg: var(--teal-600);
+  --color-banner-bg: var(--teal-50);
+  --color-banner-border: var(--teal-100);
+
+  --shadow-card: 0 1px 0 rgb(18 21 28 / 6%);
+  --shadow-elevate: 0 6px 18px rgb(18 21 28 / 8%);
+  --shadow-fab: 0 10px 28px rgb(15 122 108 / 35%);
+
+  --bg-atmosphere:
+    radial-gradient(1200px 600px at 10% -10%, #cfe8e3 0%, transparent 55%),
+    radial-gradient(900px 500px at 100% 0%, #d9e3ef 0%, transparent 50%),
+    var(--color-bg);
+
+  --radius: var(--radius-md);
+  --shadow: var(--shadow-card);
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  --color-fg: #e8eef2;
+  --color-fg-muted: #9aa5b5;
+  --color-fg-inverse: var(--neutral-900);
+
+  --color-bg: var(--neutral-950);
+  --color-bg-subtle: var(--neutral-800);
+  --color-surface: #151b24;
+  --color-surface-hover: rgb(255 255 255 / 8%);
+
+  --color-border: #2a3340;
+  --color-border-subtle: rgb(232 238 242 / 8%);
+  --color-border-strong: #3d4a5c;
+
+  --color-accent: var(--teal-300);
+  --color-accent-deep: var(--teal-200);
+  --color-accent-soft: rgb(125 206 192 / 16%);
+  --color-accent-fg: var(--teal-900);
+  --color-on-accent: var(--teal-900);
+
+  --color-danger: #f07167;
+  --color-danger-soft: rgb(180 35 24 / 22%);
+  --color-danger-border: rgb(240 113 103 / 40%);
+  --color-warn: #e3a008;
+
+  --color-focus: var(--teal-300);
+
+  --color-hero-fg: var(--hero-fg);
+  --color-hero-fg-muted: rgb(244 247 248 / 82%);
+  --color-hero-accent: var(--teal-300);
+  --color-hero-accent-hover: var(--teal-200);
+  --color-on-hero-accent: var(--teal-900);
+  --color-hero-secondary-bg: rgb(255 255 255 / 8%);
+  --color-hero-secondary-border: rgb(255 255 255 / 28%);
+
+  --color-banner-fg: var(--teal-200);
+  --color-banner-bg: rgb(125 206 192 / 14%);
+  --color-banner-border: rgb(125 206 192 / 28%);
+
+  --shadow-card: 0 1px 0 rgb(0 0 0 / 35%);
+  --shadow-elevate: 0 8px 24px rgb(0 0 0 / 35%);
+  --shadow-fab: 0 10px 28px rgb(0 0 0 / 45%);
+
+  --bg-atmosphere:
+    radial-gradient(1000px 520px at 8% -8%, rgb(15 122 108 / 22%) 0%, transparent 55%),
+    radial-gradient(800px 480px at 100% 0%, rgb(27 58 75 / 35%) 0%, transparent 50%),
+    var(--color-bg);
+
+  --radius: var(--radius-md);
+  --shadow: var(--shadow-card);
+}

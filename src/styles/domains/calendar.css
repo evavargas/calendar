@@ -1,0 +1,20 @@
+.calendar-wrap {
+  padding: var(--space-3);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+}
+
+.calendar-wrap .fc {
+  --fc-border-color: var(--color-border);
+  --fc-button-bg-color: var(--color-accent);
+  --fc-button-border-color: var(--color-accent);
+  --fc-button-hover-bg-color: var(--color-accent-deep);
+  --fc-button-hover-border-color: var(--color-accent-deep);
+  --fc-button-active-bg-color: var(--color-accent-deep);
+  --fc-button-active-border-color: var(--color-accent-deep);
+  --fc-today-bg-color: var(--color-accent-soft);
+  --fc-page-bg-color: transparent;
+  --fc-neutral-bg-color: var(--color-bg-subtle);
+  --fc-list-event-hover-bg-color: var(--color-accent-soft);
+}

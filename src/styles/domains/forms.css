@@ -1,0 +1,30 @@
+.form-grid {
+  display: grid;
+  gap: var(--space-4);
+  max-width: 640px;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
+}
+
+.detail-panel {
+  display: grid;
+  gap: 1.25rem;
+  max-width: 720px;
+  padding: 1.35rem;
+}
+
+.detail-panel .lead {
+  margin: 0;
+  color: var(--color-fg-muted);
+  white-space: pre-wrap;
+}
+
+@media (max-width: 860px) {
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+}

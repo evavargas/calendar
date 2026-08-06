@@ -1,28 +1,42 @@
 {
-  "name": "calendar",
-  "version": "0.1.0",
+  "name": "kairo",
+  "version": "0.2.0",
   "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.12"
+  },
   "scripts": {
-    "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build"
+    "dev": "vite",
+    "serve": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "lint": "eslint .",
+    "test": "vitest run",
+    "api:dev": "cd api && ./mvnw spring-boot:run",
+    "api:test": "cd api && ./mvnw test",
+    "api:docker-db": "docker compose up -d db",
+    "dev:stack": "npm run api:docker-db && npm run api:dev",
+    "dev:no-creds": "bash scripts/dev-no-creds.sh"
   },
   "dependencies": {
-    "core-js": "^3.6.5",
-    "firebase": "^9.6.9",
-    "vue": "^2.6.11",
-    "vue-router": "^3.2.0",
-    "vuetify": "^2.6.0",
-    "vuex": "^3.4.0"
+    "@fullcalendar/core": "^6.1.21",
+    "@fullcalendar/daygrid": "^6.1.21",
+    "@fullcalendar/interaction": "^6.1.21",
+    "@fullcalendar/timegrid": "^6.1.21",
+    "@fullcalendar/vue3": "^6.1.21",
+    "pinia": "^4.0.2",
+    "vue": "^3.5.40",
+    "vue-router": "^4.6.4"
   },
   "devDependencies": {
-    "@vue/cli-plugin-babel": "~4.5.15",
-    "@vue/cli-plugin-router": "~4.5.15",
-    "@vue/cli-plugin-vuex": "~4.5.15",
-    "@vue/cli-service": "~4.5.15",
-    "sass": "~1.32.0",
-    "sass-loader": "^10.0.0",
-    "vue-cli-plugin-vuetify": "~2.4.8",
-    "vue-template-compiler": "^2.6.11",
-    "vuetify-loader": "^1.7.0"
+    "@eslint/js": "^10.0.1",
+    "@vitejs/plugin-vue": "^6.0.8",
+    "eslint": "^10.8.0",
+    "eslint-plugin-vue": "^10.10.0",
+    "globals": "^17.9.0",
+    "jsdom": "^30.0.1",
+    "vite": "^8.2.0",
+    "vitest": "^4.1.10"
   }
 }

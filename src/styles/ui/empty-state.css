@@ -1,0 +1,22 @@
+.ui-empty {
+  padding: var(--space-10) var(--space-6);
+  text-align: center;
+  color: var(--color-fg-muted);
+}
+
+.ui-empty__title {
+  margin: 0 0 var(--space-2);
+  color: var(--color-fg);
+}
+
+.ui-empty__body {
+  margin: 0 auto var(--space-5);
+  max-width: 28rem;
+}
+
+.ui-empty__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  justify-content: center;
+}

@@ -6,6 +6,10 @@ node_modules
 # local env files
 .env.local
 .env.*.local
+.env
+
+# OAuth client secrets (never commit)
+client_secret*.json
 
 # Log files
 npm-debug.log*
@@ -24,3 +28,16 @@ pnpm-debug.log*
 
 # vercel
 .vercel
+
+# Java / Spring Boot
+api/target/
+api/.idea/
+api/*.iml
+api/.env
+api/.env.local
+
+# Catch-all env, but keep examples
+.env*
+!.env.example
+!.env.local.example
+!api/.env.example

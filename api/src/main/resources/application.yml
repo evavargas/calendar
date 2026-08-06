@@ -1,0 +1,56 @@
+spring:
+  application:
+    name: kairo-api
+  datasource:
+    url: ${DATABASE_URL:jdbc:h2:mem:kairo;MODE=PostgreSQL;DB_CLOSE_DELAY=-1}
+    username: ${DATABASE_USERNAME:sa}
+    password: ${DATABASE_PASSWORD:}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
+  flyway:
+    enabled: true
+  h2:
+    console:
+      enabled: false
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${GOOGLE_CLIENT_ID:local-dev-client}
+            client-secret: ${GOOGLE_CLIENT_SECRET:local-dev-secret}
+            scope: openid, profile, email
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+
+server:
+  port: ${PORT:8080}
+  servlet:
+    session:
+      cookie:
+        name: KAIRO_SESSION
+        http-only: true
+        same-site: lax
+        secure: ${COOKIE_SECURE:false}
+
+kairo:
+  frontend-url: ${FRONTEND_URL:http://localhost:5173}
+  token-secret: ${KAIRO_TOKEN_SECRET:local-dev-token-secret-32b!!}
+  auth:
+    mock-enabled: ${KAIRO_AUTH_MOCK:true}
+  cors:
+    allowed-origins: ${CORS_ORIGINS:http://localhost:5173}
+  google:
+    client-id: ${GOOGLE_CLIENT_ID:}
+    client-secret: ${GOOGLE_CLIENT_SECRET:}
+    calendar-redirect-uri: ${GOOGLE_CALENDAR_REDIRECT_URI:http://localhost:8080/api/google/callback}
+    calendar-scope: https://www.googleapis.com/auth/calendar.events
+
+logging:
+  level:
+    org.springframework.security: INFO

@@ -1,0 +1,11 @@
+/api/
+/docs/
+.env
+.env.*
+!.env.example
+!.env.local.example
+client_secret*.json
+docker-compose.yml
+/scripts/
+.github/
+*.md

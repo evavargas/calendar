@@ -1,0 +1,15 @@
+spring:
+  config:
+    activate:
+      on-profile: docker
+  datasource:
+    url: jdbc:postgresql://localhost:5432/kairo
+    username: kairo
+    password: kairo
+
+kairo:
+  auth:
+    mock-enabled: true
+  token-secret: local-dev-token-secret-32b!!
+  cors:
+    allowed-origins: http://localhost:5173
