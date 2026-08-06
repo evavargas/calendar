@@ -16,6 +16,13 @@
       </UiButton>
     </header>
 
+    <UiAlert
+      v-if="authError"
+      class="landing-auth-error"
+    >
+      No se pudo iniciar sesión con Google. Probá de nuevo.
+    </UiAlert>
+
     <section
       class="landing-hero"
       aria-label="Presentación"
@@ -84,12 +91,21 @@
 </template>
 
 <script setup>
-import { RouterLink, useRouter } from "vue-router";
-import { UiButton, UiSurface } from "../components/ui";
+import { computed, onMounted } from "vue";
+import { RouterLink, useRoute, useRouter } from "vue-router";
+import { UiAlert, UiButton, UiSurface } from "../components/ui";
 import { authLoginUrl, isMockApi } from "../services/api/client";
 
+const route = useRoute();
 const router = useRouter();
 const loginHref = authLoginUrl();
+const authError = computed(() => typeof route.query.authError === "string");
+
+onMounted(() => {
+  if (authError.value) {
+    console.warn("Login falló:", route.query.authError);
+  }
+});
 
 const onLoginClick = (event) => {
   if (!isMockApi()) return;

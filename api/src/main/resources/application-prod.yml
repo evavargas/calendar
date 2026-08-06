@@ -24,6 +24,8 @@ server:
         # Lax is enough when the browser only talks to the Vercel origin
         same-site: lax
         secure: true
+        # Force Vercel host so Set-Cookie survives Cloud Run Host header from the proxy
+        domain: ${COOKIE_DOMAIN:calendar-bay-kappa.vercel.app}
 
 kairo:
   auth:

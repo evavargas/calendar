@@ -1,5 +1,6 @@
 package app.kairo.config;
 
+import app.kairo.auth.KairoAuthenticationFailureHandler;
 import app.kairo.auth.KairoAuthenticationSuccessHandler;
 import app.kairo.auth.KairoOAuth2UserService;
 import java.util.Arrays;
@@ -26,14 +27,17 @@ public class SecurityConfig {
   private final KairoProperties properties;
   private final KairoOAuth2UserService oAuth2UserService;
   private final KairoAuthenticationSuccessHandler successHandler;
+  private final KairoAuthenticationFailureHandler failureHandler;
 
   public SecurityConfig(
       KairoProperties properties,
       KairoOAuth2UserService oAuth2UserService,
-      KairoAuthenticationSuccessHandler successHandler) {
+      KairoAuthenticationSuccessHandler successHandler,
+      KairoAuthenticationFailureHandler failureHandler) {
     this.properties = properties;
     this.oAuth2UserService = oAuth2UserService;
     this.successHandler = successHandler;
+    this.failureHandler = failureHandler;
   }
 
   @Bean
@@ -48,7 +52,10 @@ public class SecurityConfig {
                         "/api/auth/google",
                         "/api/auth/me",
                         "/api/auth/logout",
-                        "/api/google/callback")
+                        "/api/google/callback",
+                        "/oauth2/**",
+                        "/login/oauth2/**",
+                        "/login")
                     .permitAll()
                     .requestMatchers(HttpMethod.OPTIONS, "/**")
                     .permitAll()
@@ -60,7 +67,8 @@ public class SecurityConfig {
             oauth ->
                 oauth
                     .userInfoEndpoint(userInfo -> userInfo.userService(oAuth2UserService))
-                    .successHandler(successHandler))
+                    .successHandler(successHandler)
+                    .failureHandler(failureHandler))
         .logout(
             logout ->
                 logout
