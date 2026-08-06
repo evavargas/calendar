@@ -63,7 +63,11 @@ export const apiRequest = async (path, options = {}) => {
 export const isMockApi = () => USE_MOCK;
 
 export const authLoginUrl = () =>
-  USE_MOCK ? "/auth/callback?mock=1" : `${API_BASE}/api/auth/google`;
+  USE_MOCK
+    ? "/auth/callback?mock=1"
+    : // Same-origin via Vercel rewrite — never bounce through the Cloud Run host
+      // or the OAuth cookie is set on *.run.app and lost on callback.
+      "/oauth2/authorization/google";
 
 export const googleConnectUrl = () =>
   USE_MOCK ? "/app/settings?google=connected" : `${API_BASE}/api/google/connect`;

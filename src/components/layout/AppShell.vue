@@ -5,8 +5,7 @@
       class="dev-banner"
       role="status"
     >
-      Modo demo sin credenciales: auth y Google Calendar están mockeados.
-      Los datos viven en {{ mockTarget }}.
+      {{ t("shell.mockBanner", { target: mockTarget }) }}
     </p>
     <header class="site-nav">
       <RouterLink
@@ -16,6 +15,7 @@
         Kai<span>ro</span>
       </RouterLink>
       <div class="page-actions">
+        <NavPrefs />
         <UiBadge v-if="auth.user">
           {{ auth.user.name }}
         </UiBadge>
@@ -24,30 +24,30 @@
           type="button"
           @click="onLogout"
         >
-          Salir
+          {{ t("nav.logout") }}
         </UiButton>
       </div>
     </header>
     <div class="app-frame">
       <aside class="app-sidebar">
-        <nav aria-label="Principal">
+        <nav :aria-label="t('nav.primary')">
           <RouterLink :to="{ name: 'today' }">
-            Hoy
+            {{ t("nav.today") }}
           </RouterLink>
           <RouterLink :to="{ name: 'planner' }">
-            Planes
+            {{ t("nav.plans") }}
           </RouterLink>
           <RouterLink :to="{ name: 'plan-new' }">
-            Nuevo plan
+            {{ t("nav.newPlan") }}
           </RouterLink>
           <RouterLink :to="{ name: 'types' }">
-            Tipos
+            {{ t("nav.types") }}
           </RouterLink>
           <RouterLink :to="{ name: 'calendar' }">
-            Calendario
+            {{ t("nav.calendar") }}
           </RouterLink>
           <RouterLink :to="{ name: 'settings' }">
-            Ajustes
+            {{ t("nav.settings") }}
           </RouterLink>
         </nav>
       </aside>
@@ -61,7 +61,7 @@
     <UiFab
       v-if="showFab"
       :to="{ name: 'plan-new' }"
-      aria-label="Nuevo plan"
+      :aria-label="t('nav.newPlan')"
     />
   </div>
 </template>
@@ -69,10 +69,13 @@
 <script setup>
 import { computed } from "vue";
 import { RouterLink, RouterView, useRoute, useRouter } from "vue-router";
+import { useI18n } from "vue-i18n";
 import { UiBadge, UiButton, UiFab } from "../ui";
+import NavPrefs from "./NavPrefs.vue";
 import { isMockApi } from "../../services/api/client";
 import { useAuthStore } from "../../stores/auth";
 
+const { t } = useI18n();
 const auth = useAuthStore();
 const route = useRoute();
 const router = useRouter();
@@ -82,7 +85,7 @@ const showMockBanner = computed(() => {
   return Boolean(auth.user?.demoMode);
 });
 const mockTarget = computed(() =>
-  isMockApi() ? "localStorage del browser" : "API local (H2 + KAIRO_AUTH_MOCK)"
+  isMockApi() ? t("shell.mockBrowser") : t("shell.mockApi")
 );
 const showFab = computed(
   () => route.name !== "plan-new" && route.name !== "plan-edit"

@@ -10,7 +10,7 @@
       v-else
       tone="info"
     >
-      Completando inicio de sesión…
+      {{ t("auth.completing") }}
     </UiAlert>
   </main>
 </template>
@@ -18,10 +18,12 @@
 <script setup>
 import { onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
+import { useI18n } from "vue-i18n";
 import { UiAlert } from "../components/ui";
 import { isMockApi } from "../services/api/client";
 import { useAuthStore } from "../stores/auth";
 
+const { t } = useI18n();
 const auth = useAuthStore();
 const route = useRoute();
 const router = useRouter();

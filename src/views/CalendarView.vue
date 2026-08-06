@@ -2,14 +2,14 @@
   <section>
     <header class="page-header">
       <div>
-        <h1>Calendario</h1>
-        <p>Vista secundaria: tus planes proyectados en el tiempo.</p>
+        <h1>{{ t("calendar.title") }}</h1>
+        <p>{{ t("calendar.subtitle") }}</p>
       </div>
       <UiButton
         variant="primary"
         :to="{ name: 'today' }"
       >
-        Volver a Hoy
+        {{ t("nav.today") }}
       </UiButton>
     </header>
 
@@ -22,15 +22,20 @@
 <script setup>
 import { computed, onMounted } from "vue";
 import { useRouter } from "vue-router";
+import { useI18n } from "vue-i18n";
 import FullCalendar from "@fullcalendar/vue3";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import esLocale from "@fullcalendar/core/locales/es";
+import enLocale from "@fullcalendar/core/locales/en-gb";
 import { UiButton } from "../components/ui";
+import { useLocale } from "../composables/useLocale";
 import { usePlansStore } from "../stores/plans";
 import { useTypesStore } from "../stores/types";
 
+const { t } = useI18n();
+const { locale } = useLocale();
 const plans = usePlansStore();
 const types = useTypesStore();
 const router = useRouter();
@@ -60,7 +65,7 @@ const calendarEvents = computed(() =>
 const calendarOptions = computed(() => ({
   plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin],
   initialView: "dayGridMonth",
-  locale: esLocale,
+  locale: locale.value === "en" ? enLocale : esLocale,
   headerToolbar: {
     left: "prev,next today",
     center: "title",

@@ -5,7 +5,7 @@
 
 .ui-field__label,
 .ui-field > span:first-child {
-  font-size: 0.875rem;
+  font-size: var(--text-label);
   font-weight: 650;
   color: var(--color-fg-muted);
 }
@@ -17,10 +17,24 @@
   width: 100%;
   min-height: var(--touch-min);
   padding: 0.65rem 0.85rem;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
+  border: none;
+  border-bottom: 2px solid var(--color-border);
+  border-radius: var(--radius-xs);
   color: var(--color-fg);
-  background: var(--color-surface);
+  background: var(--color-surface-solid);
+  transition:
+    border-color var(--duration-fast) var(--ease-standard),
+    box-shadow var(--duration-fast) var(--ease-standard);
+}
+
+.ui-field__control:focus,
+.ui-field input:focus,
+.ui-field textarea:focus,
+.ui-field select:focus {
+  outline: none;
+  border: 2px solid var(--color-accent);
+  border-radius: var(--radius-sm);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--color-accent) 35%, transparent);
 }
 
 .ui-field textarea {
@@ -36,7 +50,7 @@
 
 .ui-field legend {
   margin-bottom: 0.45rem;
-  font-size: 0.875rem;
+  font-size: var(--text-label);
   font-weight: 650;
   color: var(--color-fg-muted);
   padding: 0;

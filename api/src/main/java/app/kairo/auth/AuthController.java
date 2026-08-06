@@ -48,7 +48,10 @@ public class AuthController {
       response.sendRedirect(properties.getFrontendUrl() + "/auth/callback");
       return;
     }
-    response.sendRedirect("/oauth2/authorization/google");
+    // Must stay on the public frontend origin (Vercel). A relative sendRedirect() is
+    // absolutized with Cloud Run's Host, which drops the OAuth cookie on callback.
+    String frontend = properties.getFrontendUrl().replaceAll("/$", "");
+    response.sendRedirect(frontend + "/oauth2/authorization/google");
   }
 
   @GetMapping("/me")

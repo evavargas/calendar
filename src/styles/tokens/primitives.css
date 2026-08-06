@@ -1,45 +1,60 @@
-/* Raw palette + scale — never use these directly in components; use semantic tokens. */
+/* Raw palette + scale — Atmospheric Precision (Stitch) adapted for Kairo.
+   Components must use semantic tokens, not these primitives. */
 
 :root {
-  /* Teal */
+  /* Teal — seed #0f7a6c + Stitch primary ladder */
   --teal-50: #d7f0eb;
   --teal-100: #b7d8d2;
   --teal-200: #9ad9ce;
-  --teal-300: #7dcec0;
+  --teal-300: #7dd6c6;
+  --teal-400: #99f3e1;
   --teal-500: #0f7a6c;
-  --teal-600: #0a5c52;
-  --teal-700: #084940;
-  --teal-900: #0a1c1a;
+  --teal-600: #006b5e;
+  --teal-700: #005046;
+  --teal-800: #003730;
+  --teal-900: #00201b;
 
-  /* Neutrals */
+  /* Atmospheric neutrals (dark charcoal-teal family) */
   --neutral-0: #ffffff;
-  --neutral-50: #f7f9fb;
+  --neutral-50: #f4f7f6;
   --neutral-100: #e8eef2;
   --neutral-200: #d5dde5;
   --neutral-300: #b7c4d0;
-  --neutral-400: #8b96a5;
-  --neutral-500: #3a4150;
-  --neutral-800: #1a1f28;
-  --neutral-900: #12151c;
-  --neutral-950: #0d1218;
+  --neutral-400: #889390;
+  --neutral-500: #5f706f;
+  --neutral-600: #3e4946;
+  --neutral-700: #313634;
+  --neutral-800: #1c211f;
+  --neutral-850: #181d1b;
+  --neutral-900: #0f1413;
+  --neutral-950: #0a0f0e;
 
-  /* Danger / warn */
-  --red-100: #fef2f1;
-  --red-200: #f3c4c0;
+  /* Danger / warn — Stitch muted oxide + soft error */
+  --red-100: #ffdad6;
+  --red-200: #944d4d;
   --red-600: #b42318;
-  --red-700: #912018;
+  --red-700: #93000a;
   --amber-600: #b45309;
+  --slate-planned: #64748b;
 
   /* Hero / landing overlays */
-  --hero-ink: #0d1b22;
-  --hero-mid: #1b3a4b;
-  --hero-fg: #f4f7f8;
+  --hero-ink: #0a0f0e;
+  --hero-mid: #121a19;
+  --hero-fg: #dfe3e1;
 
   /* Typography */
   --font-display: "Syne", "Avenir Next", "Segoe UI", sans-serif;
   --font-body: "Manrope", "Avenir Next", "Segoe UI", sans-serif;
 
-  /* Space */
+  --text-display-lg: 3rem;
+  --text-headline-md: 2rem;
+  --text-headline-sm: 1.5rem;
+  --text-body-lg: 1.125rem;
+  --text-body-md: 1rem;
+  --text-label: 0.875rem;
+  --text-label-sm: 0.75rem;
+
+  /* Space — 4px unit / 8px rhythm (Stitch) */
   --space-1: 0.25rem;
   --space-2: 0.5rem;
   --space-3: 0.75rem;
@@ -49,10 +64,11 @@
   --space-8: 2rem;
   --space-10: 2.5rem;
 
-  /* Radius */
-  --radius-sm: 10px;
-  --radius-md: 12px;
-  --radius-lg: 14px;
+  /* Soft geometry (Stitch ROUND_FOUR) — avoid hyper-pills on chrome */
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
   --radius-pill: 999px;
 
   /* Motion */

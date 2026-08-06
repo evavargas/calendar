@@ -33,6 +33,9 @@ export const formatPlanWhen = (plan, locale = "es-AR") => {
   return `${date} · ${startTime}–${endTime}`;
 };
 
+export const statusKey = (status) => `status.${status}`;
+
+/** @deprecated Prefer t(statusKey(status)) with vue-i18n */
 export const statusLabel = (status) =>
   ({
     planned: "Planificado",

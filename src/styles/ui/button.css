@@ -5,10 +5,14 @@
   gap: var(--space-2);
   min-height: var(--touch-min);
   padding: 0.65rem 1.15rem;
-  border: 1px solid transparent;
-  border-radius: var(--radius-pill);
-  font-weight: 650;
+  border: 1.5px solid transparent;
+  border-radius: var(--radius-md);
+  font-family: var(--font-body);
+  font-size: var(--text-label);
+  font-weight: 700;
+  letter-spacing: 0.01em;
   text-decoration: none;
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 8%);
   transition:
     background var(--duration-fast) var(--ease-standard),
     color var(--duration-fast) var(--ease-standard),
@@ -28,6 +32,7 @@
 .ui-btn--primary {
   color: var(--color-on-accent);
   background: var(--color-accent);
+  border-color: transparent;
 }
 
 .ui-btn--primary:hover:not(:disabled) {
@@ -35,28 +40,36 @@
 }
 
 .ui-btn--secondary {
-  color: var(--color-fg);
-  background: var(--color-surface);
-  border-color: var(--color-border);
+  color: var(--color-accent);
+  background: transparent;
+  border-color: var(--color-accent);
+  box-shadow: none;
 }
 
 .ui-btn--secondary:hover:not(:disabled) {
-  background: var(--color-bg-subtle);
+  background: var(--color-accent-soft);
 }
 
 .ui-btn--ghost {
   color: var(--color-fg-muted);
   background: transparent;
+  border-color: transparent;
+  box-shadow: none;
 }
 
 .ui-btn--ghost:hover:not(:disabled) {
   color: var(--color-fg);
-  background: var(--color-surface-hover);
+  background: var(--color-accent-soft);
 }
 
 .ui-btn--danger {
   color: var(--color-fg-inverse);
   background: var(--color-danger);
+  border-color: transparent;
+}
+
+:root[data-theme="dark"] .ui-btn--danger {
+  color: #690005;
 }
 
 .ui-btn--danger:hover:not(:disabled) {
@@ -66,6 +79,7 @@
 .ui-btn--hero-primary {
   color: var(--color-on-hero-accent);
   background: var(--color-hero-accent);
+  border-color: transparent;
 }
 
 .ui-btn--hero-primary:hover:not(:disabled) {
@@ -76,4 +90,5 @@
   color: var(--color-hero-fg);
   background: var(--color-hero-secondary-bg);
   border-color: var(--color-hero-secondary-border);
+  box-shadow: none;
 }

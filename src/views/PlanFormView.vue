@@ -2,8 +2,8 @@
   <section>
     <header class="page-header">
       <div>
-        <h1>{{ isEdit ? "Editar plan" : "Nuevo plan" }}</h1>
-        <p>Título, tipo, descripción y cuándo. El color lo define el tipo.</p>
+        <h1>{{ isEdit ? t("form.editTitle") : t("form.createTitle") }}</h1>
+        <p>{{ t("form.descriptionHint") }}</p>
       </div>
     </header>
 
@@ -12,12 +12,11 @@
     </UiAlert>
 
     <form
-      class="form-grid ui-surface"
-      style="padding: 1.25rem"
+      class="form-grid ui-surface form-surface"
       @submit.prevent="onSubmit"
     >
       <label class="ui-field">
-        <span>Título</span>
+        <span>{{ t("form.title") }}</span>
         <input
           v-model.trim="form.title"
           required
@@ -27,11 +26,11 @@
       </label>
 
       <fieldset class="ui-field">
-        <legend>Tipo</legend>
+        <legend>{{ t("form.type") }}</legend>
         <div
           class="type-chip-row"
           role="radiogroup"
-          aria-label="Tipo de plan"
+          :aria-label="t('form.type')"
         >
           <UiChip
             v-for="type in types.items"
@@ -60,12 +59,12 @@
       </fieldset>
 
       <label class="ui-field">
-        <span>Descripción</span>
+        <span>{{ t("form.description") }}</span>
         <textarea
           v-model.trim="form.description"
           name="description"
           maxlength="2000"
-          placeholder="¿Para qué es este plan?"
+          :placeholder="t('form.descriptionHint')"
         />
       </label>
 
@@ -75,13 +74,13 @@
             v-model="form.allDay"
             type="checkbox"
           >
-          Todo el día
+          {{ t("form.allDay") }}
         </span>
       </label>
 
       <div class="form-row">
         <label class="ui-field">
-          <span>Inicio</span>
+          <span>{{ t("form.startsAt") }}</span>
           <input
             v-model="form.startsAt"
             :type="form.allDay ? 'date' : 'datetime-local'"
@@ -90,7 +89,7 @@
           >
         </label>
         <label class="ui-field">
-          <span>Fin</span>
+          <span>{{ t("form.endsAt") }}</span>
           <input
             v-model="form.endsAt"
             :type="form.allDay ? 'date' : 'datetime-local'"
@@ -104,16 +103,16 @@
         v-if="isEdit"
         class="ui-field"
       >
-        <span>Estado</span>
+        <span>{{ t("form.status") }}</span>
         <select v-model="form.status">
           <option value="planned">
-            Planificado
+            {{ t("status.planned") }}
           </option>
           <option value="done">
-            Hecho
+            {{ t("status.done") }}
           </option>
           <option value="cancelled">
-            Cancelado
+            {{ t("status.cancelled") }}
           </option>
         </select>
       </label>
@@ -124,13 +123,13 @@
           type="submit"
           :disabled="saving"
         >
-          {{ isEdit ? "Guardar cambios" : "Crear plan" }}
+          {{ isEdit ? t("form.save") : t("planner.createPlan") }}
         </UiButton>
         <UiButton
           variant="ghost"
           :to="isEdit ? { name: 'plan-detail', params: { id: route.params.id } } : { name: 'today' }"
         >
-          Cancelar
+          {{ t("form.cancel") }}
         </UiButton>
       </div>
     </form>
@@ -140,10 +139,12 @@
 <script setup>
 import { computed, onMounted, reactive, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
+import { useI18n } from "vue-i18n";
 import { UiAlert, UiButton, UiChip } from "../components/ui";
 import { usePlansStore } from "../stores/plans";
 import { useTypesStore } from "../stores/types";
 
+const { t } = useI18n();
 const route = useRoute();
 const router = useRouter();
 const plans = usePlansStore();
@@ -241,3 +242,9 @@ const onSubmit = async () => {
   }
 };
 </script>
+
+<style scoped>
+.form-surface {
+  padding: var(--space-5);
+}
+</style>

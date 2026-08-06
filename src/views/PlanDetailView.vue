@@ -3,7 +3,7 @@
     <header class="page-header">
       <div>
         <h1>{{ plan.title }}</h1>
-        <p>{{ formatPlanWhen(plan) }}</p>
+        <p>{{ whenLabel }}</p>
       </div>
       <div class="page-actions">
         <UiButton
@@ -11,7 +11,7 @@
           type="button"
           @click="onExport"
         >
-          Descargar ICS
+          {{ t("plan.downloadIcs") }}
         </UiButton>
         <UiButton
           variant="secondary"
@@ -19,13 +19,13 @@
           :disabled="google.loading"
           @click="onPushGoogle"
         >
-          Enviar a Google
+          {{ t("plan.pushGoogle") }}
         </UiButton>
         <UiButton
           variant="primary"
           :to="{ name: 'plan-edit', params: { id: plan.id } }"
         >
-          Editar
+          {{ t("plan.edit") }}
         </UiButton>
       </div>
     </header>
@@ -48,10 +48,12 @@
         <UiBadge :dot="typeColor">
           {{ typeName }}
         </UiBadge>
-        <UiBadge>{{ statusLabel(plan.status) }}</UiBadge>
+        <UiBadge :tone="plan.status">
+          {{ t(statusKey(plan.status)) }}
+        </UiBadge>
       </div>
       <p class="lead">
-        {{ plan.description || "Sin descripción." }}
+        {{ plan.description || "—" }}
       </p>
       <div class="page-actions">
         <UiButton
@@ -60,7 +62,7 @@
           type="button"
           @click="setStatus('done')"
         >
-          Marcar hecho
+          {{ t("plan.markDone") }}
         </UiButton>
         <UiButton
           v-if="plan.status !== 'planned'"
@@ -68,14 +70,14 @@
           type="button"
           @click="setStatus('planned')"
         >
-          Volver a planificado
+          {{ t("plan.markPlanned") }}
         </UiButton>
         <UiButton
           variant="danger"
           type="button"
           @click="onRemove"
         >
-          Eliminar
+          {{ t("plan.delete") }}
         </UiButton>
       </div>
     </UiSurface>
@@ -85,12 +87,16 @@
 <script setup>
 import { computed, onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
+import { useI18n } from "vue-i18n";
 import { UiAlert, UiBadge, UiButton, UiSurface } from "../components/ui";
-import { formatPlanWhen, statusLabel } from "../composables/format";
+import { formatPlanWhen, statusKey } from "../composables/format";
+import { useLocale } from "../composables/useLocale";
 import { useGoogleStore } from "../stores/google";
 import { usePlansStore } from "../stores/plans";
 import { useTypesStore } from "../stores/types";
 
+const { t } = useI18n();
+const { dateLocale } = useLocale();
 const route = useRoute();
 const router = useRouter();
 const plans = usePlansStore();
@@ -101,8 +107,11 @@ const error = ref("");
 
 const plan = computed(() => plans.current);
 const type = computed(() => (plan.value ? types.byId[plan.value.typeId] : null));
-const typeName = computed(() => type.value?.name || "Sin tipo");
+const typeName = computed(() => type.value?.name || t("plan.noType"));
 const typeColor = computed(() => type.value?.color || "#0f7a6c");
+const whenLabel = computed(() =>
+  plan.value ? formatPlanWhen(plan.value, dateLocale.value) : ""
+);
 
 onMounted(async () => {
   await Promise.all([
@@ -121,7 +130,7 @@ const onExport = async () => {
   error.value = "";
   try {
     await plans.exportPlanIcs(plan.value.id);
-    message.value = "ICS descargado.";
+    message.value = t("plan.icsDownloaded");
   } catch (cause) {
     error.value = cause instanceof Error ? cause.message : "No se pudo exportar.";
   }
@@ -132,18 +141,18 @@ const onPushGoogle = async () => {
   message.value = "";
   try {
     if (!google.connected) {
-      error.value = "Conectá Google Calendar en Ajustes primero.";
+      error.value = t("plan.googleNeedConnect");
       return;
     }
     const result = await google.pushPlan(plan.value.id);
-    message.value = `Enviado a Google (${result.googleEventId}).`;
+    message.value = `Google · ${result.googleEventId}`;
   } catch (cause) {
     error.value = cause instanceof Error ? cause.message : "Falló el envío.";
   }
 };
 
 const onRemove = async () => {
-  if (!window.confirm("¿Eliminar este plan?")) return;
+  if (!window.confirm(t("plan.deleteConfirm"))) return;
   await plans.removePlan(plan.value.id);
   router.push({ name: "today" });
 };

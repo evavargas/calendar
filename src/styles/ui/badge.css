@@ -3,18 +3,40 @@
   align-items: center;
   gap: 0.35rem;
   padding: 0.2rem 0.55rem;
-  border-radius: var(--radius-pill);
-  font-size: 0.75rem;
+  border: 1px solid transparent;
+  border-radius: var(--radius-xs);
+  font-size: var(--text-label-sm);
   font-weight: 700;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
   background: var(--color-accent-soft);
   color: var(--color-accent-deep);
 }
 
 .ui-badge__dot {
-  width: 0.5rem;
-  height: 0.5rem;
+  width: 0.45rem;
+  height: 0.45rem;
   border-radius: 50%;
   flex-shrink: 0;
   background: var(--badge-dot, var(--color-accent));
+}
+
+.ui-badge--planned {
+  color: var(--color-status-planned);
+  background: transparent;
+  border-color: color-mix(in srgb, var(--color-status-planned) 55%, transparent);
+}
+
+.ui-badge--done {
+  color: var(--color-on-accent);
+  background: var(--color-status-done);
+  border-color: transparent;
+}
+
+.ui-badge--cancelled {
+  color: var(--color-status-cancelled);
+  background: transparent;
+  border-color: color-mix(in srgb, var(--color-status-cancelled) 45%, transparent);
+  text-decoration: line-through;
+  text-decoration-thickness: 1px;
 }

@@ -7,34 +7,36 @@
       >
         Kai<span>ro</span>
       </RouterLink>
-      <UiButton
-        variant="primary"
-        :href="loginHref"
-        @click="onLoginClick"
-      >
-        Entrar con Google
-      </UiButton>
+      <div class="page-actions">
+        <NavPrefs />
+        <UiButton
+          variant="primary"
+          :href="loginHref"
+          @click="onLoginClick"
+        >
+          {{ t("landing.login") }}
+        </UiButton>
+      </div>
     </header>
 
     <UiAlert
       v-if="authError"
       class="landing-auth-error"
     >
-      No se pudo iniciar sesión con Google. Probá de nuevo.
+      {{ t("landing.authError") }}
     </UiAlert>
 
     <section
       class="landing-hero"
-      aria-label="Presentación"
+      :aria-label="t('landing.presentation')"
     >
       <div class="landing-hero-inner">
         <p class="landing-brand">
           Kai<span>ro</span>
         </p>
-        <h1>Planificá con intención. El calendario es solo el mapa.</h1>
+        <h1>{{ t("landing.headline") }}</h1>
         <p class="support">
-          Organizá planes por tipo, describí el para qué, y cuando haga falta
-          exportá a .ics o empujá a Google Calendar.
+          {{ t("landing.support") }}
         </p>
         <div class="landing-cta">
           <UiButton
@@ -42,13 +44,13 @@
             :href="loginHref"
             @click="onLoginClick"
           >
-            Empezar con Google
+            {{ t("landing.start") }}
           </UiButton>
           <UiButton
             variant="hero-secondary"
             href="#como"
           >
-            Cómo funciona
+            {{ t("landing.howItWorks") }}
           </UiButton>
         </div>
       </div>
@@ -58,31 +60,27 @@
       id="como"
       class="landing-section"
     >
-      <h2>Una app de planning, no otra grilla de fechas</h2>
+      <h2>{{ t("landing.sectionTitle") }}</h2>
       <p>
-        Kairo pone el foco en lo que vas a hacer: tipo, descripción y estado.
-        La vista de calendario queda como proyección secundaria.
+        {{ t("landing.sectionBody") }}
       </p>
       <div class="feature-grid">
         <UiSurface tag="article">
-          <h3>Tipos con color</h3>
+          <h3>{{ t("landing.featureTypesTitle") }}</h3>
           <p>
-            Trabajo, salud, estudio o los que definas. El color viene del tipo,
-            no de un picker suelto.
+            {{ t("landing.featureTypesBody") }}
           </p>
         </UiSurface>
         <UiSurface tag="article">
-          <h3>Export ICS</h3>
+          <h3>{{ t("landing.featureIcsTitle") }}</h3>
           <p>
-            Descargá un plan o todo el filtro actual y abrilo en cualquier
-            cliente de calendario.
+            {{ t("landing.featureIcsBody") }}
           </p>
         </UiSurface>
         <UiSurface tag="article">
-          <h3>Google opcional</h3>
+          <h3>{{ t("landing.featureGoogleTitle") }}</h3>
           <p>
-            Login con Google. La sync de Calendar es una conexión aparte, cuando
-            la necesites.
+            {{ t("landing.featureGoogleBody") }}
           </p>
         </UiSurface>
       </div>
@@ -93,9 +91,12 @@
 <script setup>
 import { computed, onMounted } from "vue";
 import { RouterLink, useRoute, useRouter } from "vue-router";
+import { useI18n } from "vue-i18n";
 import { UiAlert, UiButton, UiSurface } from "../components/ui";
+import NavPrefs from "../components/layout/NavPrefs.vue";
 import { authLoginUrl, isMockApi } from "../services/api/client";
 
+const { t } = useI18n();
 const route = useRoute();
 const router = useRouter();
 const loginHref = authLoginUrl();

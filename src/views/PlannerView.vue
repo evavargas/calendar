@@ -2,8 +2,8 @@
   <section class="planner-page">
     <header class="page-header">
       <div>
-        <h1>Tus planes</h1>
-        <p>Lista completa. El día a día vive en Hoy.</p>
+        <h1>{{ t("planner.title") }}</h1>
+        <p>{{ t("planner.subtitle") }}</p>
       </div>
       <div class="page-actions">
         <UiButton
@@ -12,13 +12,13 @@
           :disabled="plans.loading"
           @click="onExport"
         >
-          Descargar ICS
+          {{ t("planner.downloadIcs") }}
         </UiButton>
         <UiButton
           variant="primary"
           :to="{ name: 'plan-new' }"
         >
-          Nuevo plan
+          {{ t("planner.newPlan") }}
         </UiButton>
       </div>
     </header>
@@ -26,7 +26,7 @@
     <div
       class="status-summary"
       role="group"
-      aria-label="Resumen por estado"
+      :aria-label="t('form.status')"
     >
       <button
         type="button"
@@ -35,7 +35,7 @@
         @click="setStatusFilter('planned')"
       >
         <span class="status-pill-count">{{ plans.counts.planned }}</span>
-        <span>Planificados</span>
+        <span>{{ t("planner.filterPlanned") }}</span>
       </button>
       <button
         type="button"
@@ -44,7 +44,7 @@
         @click="setStatusFilter('done')"
       >
         <span class="status-pill-count">{{ plans.counts.done }}</span>
-        <span>Hechos</span>
+        <span>{{ t("planner.filterDone") }}</span>
       </button>
       <button
         type="button"
@@ -53,7 +53,7 @@
         @click="setStatusFilter('cancelled')"
       >
         <span class="status-pill-count">{{ plans.counts.cancelled }}</span>
-        <span>Cancelados</span>
+        <span>{{ t("planner.filterCancelled") }}</span>
       </button>
       <button
         type="button"
@@ -62,7 +62,7 @@
         @click="setStatusFilter('')"
       >
         <span class="status-pill-count">{{ plans.counts.total }}</span>
-        <span>Todos</span>
+        <span>{{ t("planner.filterAll") }}</span>
       </button>
     </div>
 
@@ -70,14 +70,14 @@
       <label
         class="sr-only"
         for="filter-type"
-      >Tipo</label>
+      >{{ t("form.type") }}</label>
       <select
         id="filter-type"
         v-model="plans.filters.typeId"
         @change="plans.refresh()"
       >
         <option value="">
-          Todos los tipos
+          {{ t("planner.allTypes") }}
         </option>
         <option
           v-for="type in types.items"
@@ -95,15 +95,15 @@
 
     <UiEmptyState
       v-if="!plans.loading && plans.items.length === 0"
-      title="Todavía no hay planes"
+      :title="t('planner.emptyTitle')"
     >
-      <p>Creá el primero y asignale un tipo para que el color tenga sentido.</p>
+      <p>{{ t("planner.emptyBody") }}</p>
       <template #actions>
         <UiButton
           variant="primary"
           :to="{ name: 'plan-new' }"
         >
-          Crear plan
+          {{ t("planner.createPlan") }}
         </UiButton>
       </template>
     </UiEmptyState>
@@ -126,11 +126,13 @@
 <script setup>
 import { onMounted } from "vue";
 import { RouterLink } from "vue-router";
+import { useI18n } from "vue-i18n";
 import PlanCard from "../components/plans/PlanCard.vue";
 import { UiAlert, UiButton, UiEmptyState } from "../components/ui";
 import { usePlansStore } from "../stores/plans";
 import { useTypesStore } from "../stores/types";
 
+const { t } = useI18n();
 const plans = usePlansStore();
 const types = useTypesStore();
 

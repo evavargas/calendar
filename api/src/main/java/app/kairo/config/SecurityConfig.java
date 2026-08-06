@@ -1,8 +1,10 @@
 package app.kairo.config;
 
+import app.kairo.auth.CookieOAuth2AuthorizationRequestRepository;
 import app.kairo.auth.KairoAuthenticationFailureHandler;
 import app.kairo.auth.KairoAuthenticationSuccessHandler;
 import app.kairo.auth.KairoOAuth2UserService;
+import app.kairo.auth.KairoOidcUserService;
 import java.util.Arrays;
 import java.util.List;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -26,18 +28,24 @@ public class SecurityConfig {
 
   private final KairoProperties properties;
   private final KairoOAuth2UserService oAuth2UserService;
+  private final KairoOidcUserService oidcUserService;
   private final KairoAuthenticationSuccessHandler successHandler;
   private final KairoAuthenticationFailureHandler failureHandler;
+  private final CookieOAuth2AuthorizationRequestRepository authorizationRequestRepository;
 
   public SecurityConfig(
       KairoProperties properties,
       KairoOAuth2UserService oAuth2UserService,
+      KairoOidcUserService oidcUserService,
       KairoAuthenticationSuccessHandler successHandler,
-      KairoAuthenticationFailureHandler failureHandler) {
+      KairoAuthenticationFailureHandler failureHandler,
+      CookieOAuth2AuthorizationRequestRepository authorizationRequestRepository) {
     this.properties = properties;
     this.oAuth2UserService = oAuth2UserService;
+    this.oidcUserService = oidcUserService;
     this.successHandler = successHandler;
     this.failureHandler = failureHandler;
+    this.authorizationRequestRepository = authorizationRequestRepository;
   }
 
   @Bean
@@ -66,7 +74,12 @@ public class SecurityConfig {
         .oauth2Login(
             oauth ->
                 oauth
-                    .userInfoEndpoint(userInfo -> userInfo.userService(oAuth2UserService))
+                    .authorizationEndpoint(
+                        auth ->
+                            auth.authorizationRequestRepository(authorizationRequestRepository))
+                    .userInfoEndpoint(
+                        userInfo ->
+                            userInfo.userService(oAuth2UserService).oidcUserService(oidcUserService))
                     .successHandler(successHandler)
                     .failureHandler(failureHandler))
         .logout(

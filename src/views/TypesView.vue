@@ -2,8 +2,8 @@
   <section>
     <header class="page-header">
       <div>
-        <h1>Tipos de plan</h1>
-        <p>El color y la semántica viven acá. Los planes heredan el tipo.</p>
+        <h1>{{ t("types.title") }}</h1>
+        <p>{{ t("types.subtitle") }}</p>
       </div>
     </header>
 
@@ -12,13 +12,12 @@
     </UiAlert>
 
     <form
-      class="form-grid ui-surface"
-      style="padding: 1.25rem; margin-bottom: 1.25rem"
+      class="form-grid ui-surface types-form"
       @submit.prevent="onCreate"
     >
       <div class="form-row">
         <label class="ui-field">
-          <span>Nombre</span>
+          <span>{{ t("types.name") }}</span>
           <input
             v-model.trim="form.name"
             required
@@ -27,7 +26,7 @@
           >
         </label>
         <label class="ui-field">
-          <span>Color</span>
+          <span>{{ t("types.color") }}</span>
           <input
             v-model="form.color"
             type="color"
@@ -40,7 +39,7 @@
         variant="primary"
         type="submit"
       >
-        Agregar tipo
+        {{ t("types.create") }}
       </UiButton>
     </form>
 
@@ -61,7 +60,7 @@
           type="button"
           @click="onRemove(type.id)"
         >
-          Eliminar
+          {{ t("plan.delete") }}
         </UiButton>
       </UiSurface>
     </div>
@@ -70,9 +69,11 @@
 
 <script setup>
 import { onMounted, reactive, ref } from "vue";
+import { useI18n } from "vue-i18n";
 import { UiAlert, UiButton, UiSurface } from "../components/ui";
 import { useTypesStore } from "../stores/types";
 
+const { t } = useI18n();
 const types = useTypesStore();
 const error = ref("");
 const form = reactive({
@@ -101,3 +102,10 @@ const onRemove = async (id) => {
   }
 };
 </script>
+
+<style scoped>
+.types-form {
+  padding: var(--space-5);
+  margin-bottom: var(--space-5);
+}
+</style>

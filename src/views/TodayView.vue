@@ -5,7 +5,7 @@
         <p class="today-kicker">
           {{ greeting }}
         </p>
-        <h1>{{ isSelectedToday ? "Hoy" : selectedLabel }}</h1>
+        <h1>{{ isSelectedToday ? t("today.title") : selectedLabel }}</h1>
         <p>{{ monthLabel }}</p>
       </div>
       <div class="page-actions">
@@ -13,7 +13,7 @@
           variant="primary"
           :to="{ name: 'plan-new', query: { date: selectedKey } }"
         >
-          Nuevo plan
+          {{ t("today.newPlan") }}
         </UiButton>
       </div>
     </header>
@@ -21,7 +21,7 @@
     <div
       class="day-strip"
       role="listbox"
-      aria-label="Días de la semana"
+      :aria-label="t('today.title')"
     >
       <button
         v-for="day in weekDays"
@@ -44,7 +44,7 @@
     </UiAlert>
 
     <UiEmptyState v-if="loading">
-      <p>Cargando el día…</p>
+      <p>{{ t("today.loading") }}</p>
     </UiEmptyState>
 
     <template v-else>
@@ -52,7 +52,7 @@
         v-if="allDayPlans.length"
         class="all-day-row"
       >
-        <span class="all-day-label">Todo el día</span>
+        <span class="all-day-label">{{ t("today.allDay") }}</span>
         <div class="all-day-blocks">
           <RouterLink
             v-for="plan in allDayPlans"
@@ -68,15 +68,15 @@
 
       <UiEmptyState
         v-if="!timedPlans.length && !allDayPlans.length"
-        title="Nada en este día"
+        :title="t('today.emptyTitle')"
       >
-        <p>Agregá un plan para verlo como bloque en la línea de tiempo.</p>
+        <p>{{ t("today.emptyBody") }}</p>
         <template #actions>
           <UiButton
             variant="primary"
             :to="{ name: 'plan-new', query: { date: selectedKey } }"
           >
-            Crear plan
+            {{ t("today.createPlan") }}
           </UiButton>
         </template>
       </UiEmptyState>
@@ -95,7 +95,7 @@
             :key="hour"
             class="timeline-hour"
           >
-            {{ formatHourLabel(hour) }}
+            {{ formatHourLabel(hour, dateLocale) }}
           </div>
         </div>
         <div class="timeline-track">
@@ -112,7 +112,7 @@
           >
             <RouterLink :to="{ name: 'plan-detail', params: { id: plan.id } }">
               <strong>{{ plan.title }}</strong>
-              <span class="timeline-when">{{ formatPlanWhen(plan) }}</span>
+              <span class="timeline-when">{{ formatPlanWhen(plan, dateLocale) }}</span>
               <p
                 v-if="plan.description"
                 class="timeline-desc"
@@ -127,7 +127,7 @@
               type="button"
               @click.stop="toggleExpanded(plan.id)"
             >
-              {{ expandedId === plan.id ? "Ver menos" : "Leer más" }}
+              {{ expandedId === plan.id ? t("today.readLess") : t("today.readMore") }}
             </button>
           </article>
         </div>
@@ -139,6 +139,7 @@
 <script setup>
 import { computed, onMounted, ref, watch } from "vue";
 import { RouterLink } from "vue-router";
+import { useI18n } from "vue-i18n";
 import { UiAlert, UiButton, UiEmptyState } from "../components/ui";
 import {
   addDays,
@@ -151,6 +152,7 @@ import {
   startOfDay,
   toDateKey,
 } from "../composables/format";
+import { useLocale } from "../composables/useLocale";
 import { useAuthStore } from "../stores/auth";
 import { usePlansStore } from "../stores/plans";
 import { useTypesStore } from "../stores/types";
@@ -158,6 +160,8 @@ import { useTypesStore } from "../stores/types";
 const DAY_START_HOUR = 7;
 const DAY_END_HOUR = 21;
 
+const { t } = useI18n();
+const { dateLocale } = useLocale();
 const auth = useAuthStore();
 const plans = usePlansStore();
 const types = useTypesStore();
@@ -170,9 +174,9 @@ const expandedId = ref("");
 
 const selectedKey = computed(() => toDateKey(selected.value));
 const isSelectedToday = computed(() => selectedKey.value === toDateKey(new Date()));
-const monthLabel = computed(() => formatMonthLabel(selected.value));
+const monthLabel = computed(() => formatMonthLabel(selected.value, dateLocale.value));
 const selectedLabel = computed(() =>
-  selected.value.toLocaleDateString("es-AR", {
+  selected.value.toLocaleDateString(dateLocale.value, {
     weekday: "long",
     day: "numeric",
     month: "short",
@@ -182,13 +186,17 @@ const selectedLabel = computed(() =>
 const greeting = computed(() => {
   const name = auth.user?.name?.split(" ")[0];
   const hour = new Date().getHours();
-  const hello = hour < 12 ? "Buenos días" : hour < 19 ? "Buenas tardes" : "Buenas noches";
-  return name ? `${hello}, ${name}` : hello;
+  const key =
+    hour < 12
+      ? "today.greetingMorning"
+      : hour < 19
+        ? "today.greetingAfternoon"
+        : "today.greetingEvening";
+  return name ? t(key, { name }) : t(key, { name: "" }).replace(/,\s*$/, "");
 });
 
 const weekDays = computed(() => {
   const today = startOfDay(new Date());
-  // Show selected week's Sunday–Saturday, or centered week around selected
   const dow = selected.value.getDay();
   const sunday = addDays(selected.value, -dow);
   return Array.from({ length: 7 }, (_, index) => {
@@ -196,7 +204,7 @@ const weekDays = computed(() => {
     return {
       date,
       key: toDateKey(date),
-      dow: formatDayStripLabel(date),
+      dow: formatDayStripLabel(date, dateLocale.value),
       dayNum: date.getDate(),
       isToday: toDateKey(date) === toDateKey(today),
     };
@@ -224,8 +232,10 @@ const typeColor = (plan) => types.byId[plan.typeId]?.color || "#0f7a6c";
 
 const blockStyle = (plan) => ({
   "--block-color": typeColor(plan),
-  background: `color-mix(in srgb, ${typeColor(plan)} 22%, white)`,
+  background: `color-mix(in srgb, ${typeColor(plan)} 22%, transparent)`,
   borderColor: typeColor(plan),
+  borderLeftWidth: "3px",
+  borderLeftStyle: "solid",
 });
 
 const blockPosition = (plan) => {

@@ -43,8 +43,23 @@ img {
 }
 
 :focus-visible {
-  outline: 3px solid var(--color-focus);
-  outline-offset: 3px;
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+h1 {
+  font-size: var(--text-headline-md);
+  font-weight: 700;
+}
+
+h2 {
+  font-size: var(--text-headline-sm);
+  font-weight: 700;
+}
+
+h3 {
+  font-size: 1.125rem;
+  font-weight: 700;
 }
 
 .skip-link {

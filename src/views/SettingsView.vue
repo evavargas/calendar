@@ -2,8 +2,8 @@
   <section>
     <header class="page-header">
       <div>
-        <h1>Ajustes</h1>
-        <p>Cuenta, apariencia y conexión con Google Calendar.</p>
+        <h1>{{ t("settings.title") }}</h1>
+        <p>{{ t("settings.subtitle") }}</p>
       </div>
     </header>
 
@@ -19,45 +19,9 @@
 
     <UiSurface
       tag="article"
-      class="detail-panel"
-      style="margin-bottom: 1rem"
+      class="detail-panel settings-panel"
     >
-      <h2 style="margin: 0">
-        Apariencia
-      </h2>
-      <p class="lead">
-        Tema claro u oscuro. Se guarda en este navegador.
-      </p>
-      <div
-        class="theme-toggle"
-        role="group"
-        aria-label="Tema"
-      >
-        <UiButton
-          :variant="theme === THEME_LIGHT ? 'primary' : 'secondary'"
-          type="button"
-          @click="setTheme(THEME_LIGHT)"
-        >
-          Claro
-        </UiButton>
-        <UiButton
-          :variant="theme === THEME_DARK ? 'primary' : 'secondary'"
-          type="button"
-          @click="setTheme(THEME_DARK)"
-        >
-          Oscuro
-        </UiButton>
-      </div>
-    </UiSurface>
-
-    <UiSurface
-      tag="article"
-      class="detail-panel"
-      style="margin-bottom: 1rem"
-    >
-      <h2 style="margin: 0">
-        Sesión
-      </h2>
+      <h2>{{ t("settings.session") }}</h2>
       <p class="lead">
         {{ auth.user?.name }} · {{ auth.user?.email }}
       </p>
@@ -65,7 +29,7 @@
         v-if="isMockApi()"
         class="lead"
       >
-        Modo mock activo (`VITE_USE_MOCK_API`). El login simula Google sin backend.
+        {{ t("settings.mockMode") }}
       </p>
     </UiSurface>
 
@@ -73,14 +37,12 @@
       tag="article"
       class="detail-panel"
     >
-      <h2 style="margin: 0">
-        Google Calendar
-      </h2>
+      <h2>{{ t("settings.google") }}</h2>
       <p class="lead">
         {{
           google.connected
-            ? "Conectado. Podés enviar planes desde el detalle."
-            : "No conectado. El login de identidad no alcanza para escribir en Calendar."
+            ? t("settings.googleConnected")
+            : t("settings.googleDisconnected")
         }}
       </p>
       <div class="page-actions">
@@ -90,7 +52,7 @@
           :href="connectHref"
           @click="onConnectClick"
         >
-          Conectar Google Calendar
+          {{ t("settings.connectGoogle") }}
         </UiButton>
         <UiButton
           v-else
@@ -98,7 +60,7 @@
           type="button"
           @click="onDisconnect"
         >
-          Desconectar
+          {{ t("settings.disconnect") }}
         </UiButton>
       </div>
     </UiSurface>
@@ -108,17 +70,17 @@
 <script setup>
 import { onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
+import { useI18n } from "vue-i18n";
 import { UiAlert, UiButton, UiSurface } from "../components/ui";
-import { THEME_DARK, THEME_LIGHT, useTheme } from "../composables/useTheme";
 import { googleConnectUrl, isMockApi } from "../services/api/client";
 import { useAuthStore } from "../stores/auth";
 import { useGoogleStore } from "../stores/google";
 
+const { t } = useI18n();
 const auth = useAuthStore();
 const google = useGoogleStore();
 const route = useRoute();
 const router = useRouter();
-const { theme, setTheme } = useTheme();
 const message = ref("");
 const error = ref("");
 const connectHref = googleConnectUrl();
@@ -131,7 +93,7 @@ onMounted(async () => {
     } else {
       await google.refresh();
     }
-    message.value = "Google Calendar conectado.";
+    message.value = t("settings.googleConnectedMsg");
     router.replace({ name: "settings" });
   }
 });
@@ -144,9 +106,9 @@ const onConnectClick = async (event) => {
   error.value = "";
   try {
     await google.connectMock();
-    message.value = "Google Calendar conectado (mock).";
+    message.value = t("settings.googleConnectedMock");
   } catch (cause) {
-    error.value = cause instanceof Error ? cause.message : "No se pudo conectar.";
+    error.value = cause instanceof Error ? cause.message : t("settings.connectError");
   }
 };
 
@@ -154,10 +116,21 @@ const onDisconnect = async () => {
   error.value = "";
   try {
     await google.disconnect();
-    message.value = "Google Calendar desconectado.";
+    message.value = t("settings.googleDisconnectedMsg");
   } catch (cause) {
     error.value =
-      cause instanceof Error ? cause.message : "No se pudo desconectar.";
+      cause instanceof Error ? cause.message : t("settings.disconnectError");
   }
 };
 </script>
+
+<style scoped>
+.settings-panel {
+  margin-bottom: var(--space-4);
+}
+
+.settings-panel h2,
+.detail-panel h2 {
+  margin: 0;
+}
+</style>
