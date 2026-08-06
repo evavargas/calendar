@@ -13,6 +13,7 @@
 
     <form
       class="form-grid ui-surface types-form"
+      novalidate
       @submit.prevent="onCreate"
     >
       <div class="form-row">
@@ -21,8 +22,9 @@
           <input
             v-model.trim="form.name"
             required
-            maxlength="40"
+            maxlength="80"
             name="name"
+            autocomplete="off"
           >
         </label>
         <label class="ui-field">
@@ -71,6 +73,7 @@
 import { onMounted, reactive, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { UiAlert, UiButton, UiSurface } from "../components/ui";
+import { validateTypeForm } from "../composables/useFormValidation";
 import { useTypesStore } from "../stores/types";
 
 const { t } = useI18n();
@@ -85,11 +88,17 @@ onMounted(() => types.refresh());
 
 const onCreate = async () => {
   error.value = "";
+  const validated = validateTypeForm(form, t);
+  if (!validated.ok) {
+    error.value = validated.message;
+    return;
+  }
   try {
-    await types.createType({ name: form.name, color: form.color });
+    await types.createType(validated.data);
     form.name = "";
   } catch (cause) {
-    error.value = cause instanceof Error ? cause.message : "No se pudo crear.";
+    error.value =
+      cause instanceof Error ? cause.message : t("validation.createTypeFailed");
   }
 };
 
@@ -98,7 +107,8 @@ const onRemove = async (id) => {
   try {
     await types.removeType(id);
   } catch (cause) {
-    error.value = cause instanceof Error ? cause.message : "No se pudo eliminar.";
+    error.value =
+      cause instanceof Error ? cause.message : t("validation.deleteTypeFailed");
   }
 };
 </script>

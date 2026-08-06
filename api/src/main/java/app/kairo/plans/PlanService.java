@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 @Service
 public class PlanService {
@@ -46,6 +47,8 @@ public class PlanService {
   @Transactional
   public PlanResponse create(CreatePlanRequest request) {
     KairoPrincipal user = CurrentUser.require();
+    String title = requireTrimmed(request.title(), "title");
+    String description = normalizeDescription(request.description());
     validateType(user.id(), request.typeId());
     validateRange(request.startsAt(), request.endsAt());
     PlanEntity entity =
@@ -53,8 +56,8 @@ public class PlanService {
             UUID.randomUUID(),
             user.id(),
             request.typeId(),
-            request.title().trim(),
-            request.description(),
+            title,
+            description,
             request.startsAt(),
             request.endsAt(),
             Boolean.TRUE.equals(request.allDay()),
@@ -69,13 +72,19 @@ public class PlanService {
     if (request.typeId() != null) {
       validateType(user.id(), request.typeId());
     }
+    String title = null;
+    if (request.title() != null) {
+      title = requireTrimmed(request.title(), "title");
+    }
+    String description =
+        request.description() == null ? null : normalizeDescription(request.description());
     Instant starts = request.startsAt() != null ? request.startsAt() : entity.getStartsAt();
     Instant ends = request.endsAt() != null ? request.endsAt() : entity.getEndsAt();
     validateRange(starts, ends);
     entity.apply(
         request.typeId(),
-        request.title(),
-        request.description(),
+        title,
+        description,
         request.startsAt(),
         request.endsAt(),
         request.allDay(),
@@ -115,9 +124,30 @@ public class PlanService {
   }
 
   private void validateRange(Instant startsAt, Instant endsAt) {
+    if (startsAt == null || endsAt == null) {
+      throw ApiException.badRequest("Inicio y fin son obligatorios.");
+    }
     if (endsAt.isBefore(startsAt)) {
       throw ApiException.badRequest("El fin no puede ser anterior al inicio.");
     }
+  }
+
+  private static String requireTrimmed(String value, String field) {
+    if (!StringUtils.hasText(value)) {
+      throw ApiException.badRequest(field + ": no puede estar vacío");
+    }
+    String trimmed = value.trim();
+    if (trimmed.isEmpty()) {
+      throw ApiException.badRequest(field + ": no puede estar vacío");
+    }
+    return trimmed;
+  }
+
+  private static String normalizeDescription(String description) {
+    if (description == null) {
+      return "";
+    }
+    return description.trim();
   }
 
   private PlanStatus parseStatus(String status) {
@@ -125,7 +155,7 @@ public class PlanService {
       return null;
     }
     try {
-      return PlanStatus.valueOf(status);
+      return PlanStatus.valueOf(status.trim());
     } catch (IllegalArgumentException ex) {
       throw ApiException.badRequest("Estado inválido");
     }

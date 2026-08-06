@@ -13,6 +13,7 @@
 
     <form
       class="form-grid ui-surface form-surface"
+      novalidate
       @submit.prevent="onSubmit"
     >
       <label class="ui-field">
@@ -20,8 +21,9 @@
         <input
           v-model.trim="form.title"
           required
-          maxlength="120"
+          maxlength="160"
           name="title"
+          autocomplete="off"
         >
       </label>
 
@@ -54,7 +56,7 @@
           v-if="!types.items.length"
           class="ui-field__hint"
         >
-          Creá un tipo en Tipos antes de guardar.
+          {{ t("validation.needTypesFirst") }}
         </p>
       </fieldset>
 
@@ -63,7 +65,7 @@
         <textarea
           v-model.trim="form.description"
           name="description"
-          maxlength="2000"
+          maxlength="4000"
           :placeholder="t('form.descriptionHint')"
         />
       </label>
@@ -141,6 +143,7 @@ import { computed, onMounted, reactive, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { UiAlert, UiButton, UiChip } from "../components/ui";
+import { validatePlanForm } from "../composables/useFormValidation";
 import { usePlansStore } from "../stores/plans";
 import { useTypesStore } from "../stores/types";
 
@@ -157,14 +160,20 @@ const isEdit = computed(() => route.name === "plan-edit");
 const toInputValue = (iso, allDay) => {
   if (!iso) return "";
   const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return "";
   if (allDay) return date.toISOString().slice(0, 10);
   const local = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
   return local.toISOString().slice(0, 16);
 };
 
 const fromInputValue = (value, allDay) => {
-  if (allDay) return new Date(`${value}T00:00:00`).toISOString();
-  return new Date(value).toISOString();
+  if (!value) return "";
+  if (allDay) {
+    const date = new Date(`${value}T00:00:00`);
+    return Number.isNaN(date.getTime()) ? "" : date.toISOString();
+  }
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? "" : date.toISOString();
 };
 
 const form = reactive({
@@ -184,8 +193,10 @@ onMounted(async () => {
     const start = new Date();
     if (typeof route.query.date === "string" && route.query.date) {
       const [year, month, day] = route.query.date.split("-").map(Number);
-      start.setFullYear(year, month - 1, day);
-      start.setHours(9, 0, 0, 0);
+      if ([year, month, day].every((n) => Number.isFinite(n))) {
+        start.setFullYear(year, month - 1, day);
+        start.setHours(9, 0, 0, 0);
+      }
     } else {
       start.setMinutes(0, 0, 0);
       start.setHours(start.getHours() + 1);
@@ -209,34 +220,40 @@ onMounted(async () => {
 
 const onSubmit = async () => {
   error.value = "";
-  const startsAt = fromInputValue(form.startsAt, form.allDay);
-  const endsAt = fromInputValue(form.endsAt, form.allDay);
-  if (new Date(endsAt) < new Date(startsAt)) {
-    error.value = "El fin no puede ser anterior al inicio.";
+  const startsAtIso = fromInputValue(form.startsAt, form.allDay);
+  const endsAtIso = fromInputValue(form.endsAt, form.allDay);
+
+  const validated = validatePlanForm(
+    {
+      title: form.title,
+      typeId: form.typeId,
+      description: form.description,
+      allDay: form.allDay,
+      startsAt: form.startsAt,
+      endsAt: form.endsAt,
+      startsAtIso,
+      endsAtIso,
+      status: isEdit.value ? form.status : undefined,
+    },
+    t
+  );
+
+  if (!validated.ok) {
+    error.value = validated.message;
     return;
   }
-
-  const payload = {
-    title: form.title,
-    typeId: form.typeId,
-    description: form.description,
-    allDay: form.allDay,
-    startsAt,
-    endsAt,
-    ...(isEdit.value ? { status: form.status } : {}),
-  };
 
   saving.value = true;
   try {
     if (isEdit.value) {
-      await plans.updatePlan(route.params.id, payload);
+      await plans.updatePlan(route.params.id, validated.data);
       router.push({ name: "plan-detail", params: { id: route.params.id } });
     } else {
-      const created = await plans.createPlan(payload);
+      const created = await plans.createPlan(validated.data);
       router.push({ name: "plan-detail", params: { id: created.id } });
     }
   } catch (cause) {
-    error.value = cause instanceof Error ? cause.message : "No se pudo guardar.";
+    error.value = cause instanceof Error ? cause.message : t("validation.saveFailed");
   } finally {
     saving.value = false;
   }

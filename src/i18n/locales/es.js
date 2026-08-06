@@ -137,4 +137,20 @@ export default {
   auth: {
     completing: "Completando inicio de sesión…",
   },
+  validation: {
+    titleRequired: "El título es obligatorio.",
+    titleMax: "El título no puede superar 160 caracteres.",
+    typeRequired: "Elegí un tipo de plan.",
+    descriptionMax: "La descripción no puede superar 4000 caracteres.",
+    datesRequired: "Inicio y fin son obligatorios.",
+    rangeInvalid: "El fin no puede ser anterior al inicio.",
+    statusInvalid: "Estado inválido.",
+    typeNameRequired: "El nombre del tipo es obligatorio.",
+    typeNameMax: "El nombre no puede superar 80 caracteres.",
+    colorInvalid: "El color debe ser hex (#RRGGBB).",
+    needTypesFirst: "Creá un tipo en Tipos antes de guardar.",
+    saveFailed: "No se pudo guardar.",
+    createTypeFailed: "No se pudo crear.",
+    deleteTypeFailed: "No se pudo eliminar.",
+  },
 };

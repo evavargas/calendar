@@ -137,4 +137,20 @@ export default {
   auth: {
     completing: "Completing sign-in…",
   },
+  validation: {
+    titleRequired: "Title is required.",
+    titleMax: "Title can’t exceed 160 characters.",
+    typeRequired: "Pick a plan type.",
+    descriptionMax: "Description can’t exceed 4000 characters.",
+    datesRequired: "Start and end are required.",
+    rangeInvalid: "End can’t be before start.",
+    statusInvalid: "Invalid status.",
+    typeNameRequired: "Type name is required.",
+    typeNameMax: "Name can’t exceed 80 characters.",
+    colorInvalid: "Color must be hex (#RRGGBB).",
+    needTypesFirst: "Create a type under Types before saving.",
+    saveFailed: "Couldn’t save.",
+    createTypeFailed: "Couldn’t create.",
+    deleteTypeFailed: "Couldn’t delete.",
+  },
 };

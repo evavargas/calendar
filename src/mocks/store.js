@@ -79,6 +79,38 @@ const delay = (value) =>
     window.setTimeout(() => resolve(value), 180);
   });
 
+const requireTrimmed = (value, field) => {
+  if (value == null || String(value).trim() === "") {
+    throw new Error(`${field}: no puede estar vacío`);
+  }
+  return String(value).trim();
+};
+
+const normalizeHexColor = (color) => {
+  if (color == null || String(color).trim() === "") {
+    throw new Error("color: no puede estar vacío");
+  }
+  const trimmed = String(color).trim();
+  if (!/^#[0-9A-Fa-f]{6}$/.test(trimmed)) {
+    throw new Error("color: debe ser un color hex (#RRGGBB)");
+  }
+  return trimmed.toLowerCase();
+};
+
+const assertValidRange = (startsAt, endsAt) => {
+  if (!startsAt || !endsAt) {
+    throw new Error("Inicio y fin son obligatorios.");
+  }
+  const start = new Date(startsAt);
+  const end = new Date(endsAt);
+  if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) {
+    throw new Error("Fechas inválidas.");
+  }
+  if (end < start) {
+    throw new Error("El fin no puede ser anterior al inicio.");
+  }
+};
+
 export const mockAuth = {
   async me() {
     return delay(readState().user);
@@ -108,11 +140,14 @@ export const mockTypes = {
     return delay([...readState().types].sort((a, b) => a.sortOrder - b.sortOrder));
   },
   async create(payload) {
+    const name = requireTrimmed(payload?.name, "name");
+    if (name.length > 80) throw new Error("name: demasiado largo");
+    const color = normalizeHexColor(payload?.color);
     const state = readState();
     const type = {
       id: crypto.randomUUID(),
-      name: payload.name,
-      color: payload.color || "#0f7a6c",
+      name,
+      color,
       sortOrder: state.types.length + 1,
     };
     state.types.push(type);
@@ -123,7 +158,15 @@ export const mockTypes = {
     const state = readState();
     const index = state.types.findIndex((item) => item.id === id);
     if (index < 0) throw new Error("Tipo no encontrado");
-    state.types[index] = { ...state.types[index], ...payload };
+    const next = { ...state.types[index] };
+    if (payload.name != null) {
+      next.name = requireTrimmed(payload.name, "name");
+      if (next.name.length > 80) throw new Error("name: demasiado largo");
+    }
+    if (payload.color != null) {
+      next.color = normalizeHexColor(payload.color);
+    }
+    state.types[index] = next;
     writeState(state);
     return delay(state.types[index]);
   },
@@ -165,13 +208,29 @@ export const mockPlans = {
   },
   async create(payload) {
     const state = readState();
+    const title = requireTrimmed(payload?.title, "title");
+    if (title.length > 160) throw new Error("title: demasiado largo");
+    if (!payload?.typeId) throw new Error("typeId: obligatorio");
+    if (!state.types.some((type) => type.id === payload.typeId)) {
+      throw new Error("Tipo inválido");
+    }
+    const startsAt = payload.startsAt;
+    const endsAt = payload.endsAt;
+    assertValidRange(startsAt, endsAt);
+    const description =
+      payload.description == null ? "" : String(payload.description).trim();
+    if (description.length > 4000) throw new Error("description: demasiado largo");
     const plan = {
       id: crypto.randomUUID(),
+      typeId: payload.typeId,
+      title,
+      description,
+      startsAt,
+      endsAt,
+      allDay: Boolean(payload.allDay),
       status: "planned",
-      allDay: false,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
-      ...payload,
     };
     state.plans.push(plan);
     writeState(state);
@@ -181,11 +240,36 @@ export const mockPlans = {
     const state = readState();
     const index = state.plans.findIndex((item) => item.id === id);
     if (index < 0) throw new Error("Plan no encontrado");
-    state.plans[index] = {
-      ...state.plans[index],
-      ...payload,
-      updatedAt: new Date().toISOString(),
-    };
+    const current = state.plans[index];
+    const next = { ...current };
+    if (payload.title != null) {
+      next.title = requireTrimmed(payload.title, "title");
+      if (next.title.length > 160) throw new Error("title: demasiado largo");
+    }
+    if (payload.typeId != null) {
+      if (!state.types.some((type) => type.id === payload.typeId)) {
+        throw new Error("Tipo inválido");
+      }
+      next.typeId = payload.typeId;
+    }
+    if (payload.description != null) {
+      next.description = String(payload.description).trim();
+      if (next.description.length > 4000) {
+        throw new Error("description: demasiado largo");
+      }
+    }
+    if (payload.startsAt != null) next.startsAt = payload.startsAt;
+    if (payload.endsAt != null) next.endsAt = payload.endsAt;
+    if (payload.allDay != null) next.allDay = Boolean(payload.allDay);
+    if (payload.status != null) {
+      if (!["planned", "done", "cancelled"].includes(payload.status)) {
+        throw new Error("Estado inválido");
+      }
+      next.status = payload.status;
+    }
+    assertValidRange(next.startsAt, next.endsAt);
+    next.updatedAt = new Date().toISOString();
+    state.plans[index] = next;
     writeState(state);
     return delay(state.plans[index]);
   },
