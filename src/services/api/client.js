@@ -41,7 +41,7 @@ export const apiRequest = async (path, options = {}) => {
     ...options,
   });
 
-  if (response.status === 204) {
+  if (response.status === 204 || response.status === 205) {
     return null;
   }
 
@@ -57,7 +57,15 @@ export const apiRequest = async (path, options = {}) => {
     return response.blob();
   }
 
-  return response.json();
+  // Empty bodies (some proxies) should not blow up JSON.parse via response.json()
+  const text = await response.text();
+  if (!text) {
+    return null;
+  }
+  if (contentType.includes("application/json") || text.startsWith("{") || text.startsWith("[")) {
+    return JSON.parse(text);
+  }
+  return text;
 };
 
 export const isMockApi = () => USE_MOCK;

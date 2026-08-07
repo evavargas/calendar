@@ -78,11 +78,14 @@ router.beforeEach(async (to) => {
     await auth.bootstrap();
   }
 
-  if (to.meta.requiresAuth && !auth.isAuthenticated) {
+  const requiresAuth = to.matched.some((record) => record.meta.requiresAuth);
+  const guestOnly = to.matched.some((record) => record.meta.guestOnly);
+
+  if (requiresAuth && !auth.isAuthenticated) {
     return { name: "landing", query: { next: to.fullPath } };
   }
 
-  if (to.meta.guestOnly && auth.isAuthenticated) {
+  if (guestOnly && auth.isAuthenticated) {
     return { name: "today" };
   }
 

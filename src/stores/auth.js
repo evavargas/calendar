@@ -41,13 +41,17 @@ export const useAuthStore = defineStore("auth", () => {
   const logout = async () => {
     loading.value = true;
     error.value = "";
+    // Clear local session first so guest-only routing cannot bounce back to /app
+    // if the network call hangs, CORS-fails, or the cookie is already gone.
+    user.value = null;
     try {
       await authApi.logout();
-      user.value = null;
     } catch (cause) {
-      error.value = cause instanceof Error ? cause.message : "No se pudo cerrar sesión.";
-      throw cause;
+      error.value =
+        cause instanceof Error ? cause.message : "No se pudo cerrar sesión.";
+      // Still treat as logged out locally — server session may already be invalid.
     } finally {
+      user.value = null;
       loading.value = false;
     }
   };

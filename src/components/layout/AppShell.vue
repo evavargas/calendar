@@ -22,6 +22,7 @@
         <UiButton
           variant="ghost"
           type="button"
+          :disabled="loggingOut"
           @click="onLogout"
         >
           {{ t("nav.logout") }}
@@ -67,7 +68,7 @@
 </template>
 
 <script setup>
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import { RouterLink, RouterView, useRoute, useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { UiBadge, UiButton, UiFab } from "../ui";
@@ -79,6 +80,7 @@ const { t } = useI18n();
 const auth = useAuthStore();
 const route = useRoute();
 const router = useRouter();
+const loggingOut = ref(false);
 
 const showMockBanner = computed(() => {
   if (isMockApi()) return true;
@@ -92,7 +94,14 @@ const showFab = computed(
 );
 
 const onLogout = async () => {
-  await auth.logout();
-  router.push({ name: "landing" });
+  if (loggingOut.value) return;
+  loggingOut.value = true;
+  try {
+    await auth.logout();
+  } finally {
+    // replace: avoid landing→today bounce stacks; always leave /app
+    await router.replace({ name: "landing" });
+    loggingOut.value = false;
+  }
 };
 </script>
